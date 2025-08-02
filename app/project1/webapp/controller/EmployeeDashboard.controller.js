@@ -28,18 +28,26 @@ sap.ui.define([
          * Initialize the Notion-like notes system
          */
         _initializeNotesSystem() {
-            // Initialize database
-            this._notesDatabase = new NotesDatabase();
+            try {
+                console.log("Initializing Notion-like notes system...");
 
-            // Initialize block manager
-            this._blockManager = new BlockManager(this._notesDatabase);
+                // Initialize database
+                this._notesDatabase = new NotesDatabase();
+                console.log("Notes database initialized");
 
-            // Auto-save settings
-            this._autoSaveEnabled = true;
-            this._autoSaveInterval = null;
-            this._currentNoteId = null;
+                // Initialize block manager
+                this._blockManager = new BlockManager(this._notesDatabase);
+                console.log("Block manager initialized");
 
-            console.log("Notion-like notes system initialized");
+                // Auto-save settings
+                this._autoSaveEnabled = true;
+                this._autoSaveInterval = null;
+                this._currentNoteId = null;
+
+                console.log("Notion-like notes system initialized successfully");
+            } catch (error) {
+                console.error("Error initializing notes system:", error);
+            }
         },
 
         _initializeNavigation() {
@@ -1037,9 +1045,10 @@ Feel free to ask me anything specific about your onboarding journey!`;
          * Setup the notes model
          */
         _setupNotesModel(notes) {
+            console.log("Setting up notes model with", notes.length, "notes:", notes);
+
             const oNotesModel = new JSONModel({
                 notes: notes,
-
                 currentNote: {
                     id: "",
                     title: "Welcome to Notion-like Notes! 📝",
@@ -1054,7 +1063,9 @@ Feel free to ask me anything specific about your onboarding journey!`;
                 categories: ["Personal", "Work", "Projects", "Ideas", "Meeting Notes"],
                 autoSaveEnabled: this._autoSaveEnabled
             });
+
             this._oNotesDialog.setModel(oNotesModel);
+            console.log("Notes model set up successfully");
         },
 
         /**
@@ -1439,13 +1450,33 @@ Feel free to ask me anything specific about your onboarding journey!`;
         },
 
         async onNoteSelect(oEvent) {
-            const oSelectedItem = oEvent.getParameter("listItem");
-            const oContext = oSelectedItem.getBindingContext();
-            const oNote = oContext.getObject();
-
             try {
+                const oSelectedItem = oEvent.getParameter("listItem");
+
+                if (!oSelectedItem) {
+                    console.error("No item selected");
+                    return;
+                }
+
+                const oContext = oSelectedItem.getBindingContext();
+
+                if (!oContext) {
+                    console.error("No binding context found");
+                    return;
+                }
+
+                const oNote = oContext.getObject();
+
+                if (!oNote || !oNote.id) {
+                    console.error("Invalid note object:", oNote);
+                    return;
+                }
+
+                console.log("Loading note:", oNote.title, "ID:", oNote.id);
+
                 // Load blocks for the selected note
                 const blocks = await this._blockManager.getBlocksForNote(oNote.id);
+                console.log("Loaded blocks:", blocks.length);
 
                 // Set current note with blocks
                 const oModel = this._oNotesDialog.getModel();
@@ -1462,9 +1493,11 @@ Feel free to ask me anything specific about your onboarding journey!`;
                     this._startAutoSave();
                 }
 
+                MessageToast.show(`📖 Loaded note: ${oNote.title}`);
+
             } catch (error) {
                 console.error("Error loading note:", error);
-                MessageToast.show("Error loading note");
+                MessageToast.show("Error loading note: " + error.message);
             }
         },
 
@@ -1715,17 +1748,42 @@ Feel free to ask me anything specific about your onboarding journey!`;
          * Render blocks in the UI
          */
         _renderBlocks(blocks) {
-            const blocksContainer = this.byId("dynamicBlocksContainer");
-            if (!blocksContainer) return;
+            try {
+                console.log("Rendering", blocks.length, "blocks");
 
-            // Clear existing blocks
-            blocksContainer.destroyItems();
+                // Find the blocks container using Fragment.byId
+                const blocksContainer = sap.ui.core.Fragment.byId(this.getView().getId(), "dynamicBlocksContainer");
 
-            // Render each block
-            blocks.forEach((block, index) => {
-                const blockControl = this._createBlockControl(block, index);
-                blocksContainer.addItem(blockControl);
-            });
+                if (!blocksContainer) {
+                    console.error("Could not find blocks container");
+                    return;
+                }
+
+                // Clear existing blocks
+                blocksContainer.destroyItems();
+
+                // If no blocks, show a placeholder
+                if (blocks.length === 0) {
+                    const placeholderText = new sap.m.Text({
+                        text: "No content yet. Click '+ Add Block' to start writing!",
+                        class: "sapUiContentLabelColor"
+                    });
+                    blocksContainer.addItem(placeholderText);
+                    return;
+                }
+
+                // Render each block
+                blocks.forEach((block, index) => {
+                    const blockControl = this._createBlockControl(block, index);
+                    blocksContainer.addItem(blockControl);
+                });
+
+                console.log("Successfully rendered", blocks.length, "blocks");
+
+            } catch (error) {
+                console.error("Error rendering blocks:", error);
+                MessageToast.show("Error displaying note content");
+            }
         },
 
         /**

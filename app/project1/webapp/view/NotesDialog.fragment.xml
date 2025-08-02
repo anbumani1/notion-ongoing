@@ -161,7 +161,7 @@
                     <ScrollContainer id="blocksScrollContainer" height="500px" class="notion-blocks-container">
                         <VBox id="blocksContainer" class="sapUiMediumMargin">
                             <!-- Blocks will be dynamically generated here -->
-                            <VBox id="dynamicBlocksContainer" items="{/currentNote/blocks}">
+                            <VBox id="dynamicBlocksContainer">
                                 <!-- This will be populated by JavaScript -->
                             </VBox>
 
