@@ -6,44 +6,13 @@
     <Dialog id="learningDialog" title="Learning Management System" contentWidth="1000px" contentHeight="700px" resizable="true">
         <content>
             <VBox id="learningContainer" class="sapUiMediumMargin">
-                <!-- SAP Learning Progress Overview -->
-                <Panel id="progressPanel" headerText="SAP Learning Journey - Progress Overview" class="sapUiMediumMarginBottom">
-                    <content>
-                        <HBox id="progressContainer" class="sapUiMediumMargin" wrap="Wrap">
-                            <VBox id="overallProgress" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="200px">
-                                <Title id="progressTitle" text="Overall Progress" level="H4"/>
-                                <ProgressIndicator id="overallProgressBar" percentValue="{/learningProgress/overall}" displayValue="{/learningProgress/overall}%" width="100%"/>
-                            </VBox>
-                            <VBox id="completedCourses" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="150px">
-                                <Title id="completedTitle" text="Completed" level="H4"/>
-                                <ObjectNumber id="completedNumber" number="{/learningProgress/completed}" unit="courses" emphasized="true" state="Success"/>
-                            </VBox>
-                            <VBox id="inProgressCourses" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="150px">
-                                <Title id="inProgressTitle" text="In Progress" level="H4"/>
-                                <ObjectNumber id="inProgressNumber" number="{/learningProgress/inProgress}" unit="courses" emphasized="true" state="Warning"/>
-                            </VBox>
-                            <VBox id="certificatesEarned" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="150px">
-                                <Title id="certificatesTitle" text="Certificates" level="H4"/>
-                                <ObjectNumber id="certificatesNumber" number="{/learningProgress/certificates}" unit="earned" emphasized="true" state="Success"/>
-                            </VBox>
-                            <VBox id="totalHours" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="150px">
-                                <Title id="hoursTitle" text="Total Hours" level="H4"/>
-                                <ObjectNumber id="hoursNumber" number="{/learningProgress/totalHours}" unit="hours" emphasized="true" state="None"/>
-                            </VBox>
-                            <VBox id="learningStreak" class="sapUiMediumMarginBottom" width="150px">
-                                <Title id="streakTitle" text="Learning Streak" level="H4"/>
-                                <ObjectNumber id="streakNumber" number="{/learningProgress/streak}" unit="days" emphasized="true" state="Success"/>
-                            </VBox>
-                        </HBox>
-                    </content>
-                </Panel>
 
-                <!-- Learning Paths -->
+                <!-- SAP Learning Paths - Basic to Advanced -->
                 <Panel id="learningPathsPanel" headerText="SAP Learning Paths - Basic to Advanced" class="sapUiMediumMarginBottom">
                     <content>
                         <VBox id="pathsContainer" class="sapUiMediumMargin">
                             <List id="learningPathsList" items="{/learningPaths}" mode="None">
-                                <CustomListItem id="pathListItem" type="Active" press="onStartLearningPath">
+                                <CustomListItem id="pathListItem" type="Active" press="onOpenLearningPath">
                                     <content>
                                         <HBox id="pathItemBox" justifyContent="SpaceBetween" alignItems="Center" class="sapUiMediumMargin">
                                             <VBox id="pathInfoBox" class="sapUiMediumMarginEnd">
@@ -54,19 +23,17 @@
                                                         <Text id="pathLevel" text="Level: {level}" class="sapUiContentLabelColor"/>
                                                     </VBox>
                                                 </HBox>
-                                                <Text id="pathDescription" text="{description}" maxLines="2" class="sapUiTinyMarginTop"/>
+                                                <Text id="pathDescription" text="{description}" maxLines="3" class="sapUiTinyMarginTop"/>
                                                 <HBox id="pathMetaBox" class="sapUiTinyMarginTop">
-                                                    <Text id="pathCourses" text="{completedCourses}/{totalCourses} courses" class="sapUiContentLabelColor sapUiTinyMarginEnd"/>
-                                                    <Text id="pathHours" text="{estimatedHours}h estimated" class="sapUiContentLabelColor sapUiTinyMarginEnd"/>
-                                                    <Text id="pathDueDate" text="Due: {dueDate}" class="sapUiContentLabelColor"/>
+                                                    <Text id="pathDuration" text="Duration: {duration}" class="sapUiContentLabelColor sapUiTinyMarginEnd"/>
+                                                    <Text id="pathCertification" text="Certification: {certification}" class="sapUiContentLabelColor"/>
                                                 </HBox>
                                             </VBox>
                                             <VBox id="pathStatusBox" alignItems="End" width="200px">
-                                                <ObjectStatus id="pathStatus" text="{status}" state="{path: 'status', formatter: '.formatCourseStatus'}"/>
-                                                <ProgressIndicator id="pathProgress" percentValue="{progress}" displayValue="{progress}%" width="150px" class="sapUiTinyMarginTop"/>
-                                                <Button id="pathActionBtn" text="{path: 'status', formatter: '.formatCourseButtonText'}" type="Emphasized" press="onStartLearningPath" class="sapUiTinyMarginTop">
+                                                <Button id="pathActionBtn" text="Start Learning" type="Emphasized" press="onOpenLearningPath" class="sapUiTinyMarginTop">
                                                     <customData>
-                                                        <core:CustomData id="pathData" key="pathId" value="{id}"/>
+                                                        <core:CustomData id="pathData" key="url" value="{url}"/>
+                                                        <core:CustomData id="pathNameData" key="pathName" value="{name}"/>
                                                     </customData>
                                                 </Button>
                                             </VBox>
@@ -78,100 +45,35 @@
                     </content>
                 </Panel>
 
-                <!-- Current SAP Courses -->
-                <Panel id="currentCoursesPanel" headerText="My Current SAP Courses">
-                    <content>
-                        <Table id="coursesTable" items="{/currentCourses}" mode="None">
-                            <columns>
-                                <Column id="courseNameColumn" width="30%">
-                                    <Text id="courseNameHeader" text="SAP Course Details"/>
-                                </Column>
-                                <Column id="levelColumn" width="10%">
-                                    <Text id="levelHeader" text="Level"/>
-                                </Column>
-                                <Column id="progressColumn" width="12%">
-                                    <Text id="progressHeader" text="Progress"/>
-                                </Column>
-                                <Column id="dueDateColumn" width="12%">
-                                    <Text id="dueDateHeader" text="Due Date"/>
-                                </Column>
-                                <Column id="statusColumn" width="10%">
-                                    <Text id="statusHeader" text="Status"/>
-                                </Column>
-                                <Column id="instructorColumn" width="13%">
-                                    <Text id="instructorHeader" text="Instructor"/>
-                                </Column>
-                                <Column id="actionColumn" width="13%">
-                                    <Text id="actionHeader" text="Action"/>
-                                </Column>
-                            </columns>
-                            <items>
-                                <ColumnListItem id="courseItem">
-                                    <cells>
-                                        <VBox id="courseNameBox">
-                                            <Title id="courseName" text="{name}" level="H6" class="sapUiTinyMarginBottom"/>
-                                            <Text id="courseDescription" text="{description}" class="sapUiContentLabelColor sapUiTinyMarginBottom"/>
-                                            <HBox id="courseMetaBox">
-                                                <Text id="courseDuration" text="{duration}" class="sapUiContentLabelColor sapUiTinyMarginEnd"/>
-                                                <core:Icon id="ratingIcon" src="sap-icon://favorite" size="0.75rem" color="#f0ab00" class="sapUiTinyMarginEnd"/>
-                                                <Text id="courseRating" text="{rating}" class="sapUiContentLabelColor"/>
-                                            </HBox>
-                                        </VBox>
-                                        <VBox id="levelBox" alignItems="Center">
-                                            <ObjectStatus id="courseLevel" text="{level}" state="None" class="sapUiTinyMarginBottom"/>
-                                            <Text id="coursePathId" text="{pathId}" class="sapUiContentLabelColor"/>
-                                        </VBox>
-                                        <VBox id="progressBox" alignItems="Center">
-                                            <ProgressIndicator id="courseProgress" percentValue="{progress}" displayValue="{progress}%" width="80px"/>
-                                            <core:Icon id="certificateIcon" src="sap-icon://badge" size="1rem" color="{path: 'certificate', formatter: '.formatCertificateColor'}" class="sapUiTinyMarginTop" visible="{certificate}"/>
-                                        </VBox>
-                                        <Text id="courseDueDate" text="{dueDate}"/>
-                                        <ObjectStatus id="courseStatus" text="{status}" state="{path: 'status', formatter: '.formatCourseStatus'}"/>
-                                        <Text id="courseInstructor" text="{instructor}" class="sapUiContentLabelColor"/>
-                                        <Button id="continueBtn" text="{path: 'status', formatter: '.formatCourseButtonText'}" type="Emphasized" press="onContinueCourse"/>
-                                    </cells>
-                                </ColumnListItem>
-                            </items>
-                        </Table>
-                    </content>
-                </Panel>
+
 
                 <!-- SAP Learning Resources -->
                 <Panel id="resourcesPanel" headerText="SAP Learning Resources" class="sapUiMediumMarginTop">
                     <content>
                         <VBox id="resourcesContainer" class="sapUiMediumMargin">
-                            <HBox id="resourcesBox" wrap="Wrap">
-                                <VBox id="documentationBox" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="200px">
-                                    <core:Icon id="docIcon" src="sap-icon://document" size="2rem" color="#0070f2" class="sapUiMediumMarginBottom"/>
-                                    <Title id="docTitle" text="SAP Help Portal" level="H6"/>
-                                    <Text id="docDesc" text="Official documentation and guides" class="sapUiContentLabelColor"/>
-                                </VBox>
-                                <VBox id="communityBox" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="200px">
-                                    <core:Icon id="communityIcon" src="sap-icon://group" size="2rem" color="#107e3e" class="sapUiMediumMarginBottom"/>
-                                    <Title id="communityTitle" text="SAP Community" level="H6"/>
-                                    <Text id="communityDesc" text="Connect with SAP experts" class="sapUiContentLabelColor"/>
-                                </VBox>
-                                <VBox id="trainingBox" class="sapUiMediumMarginEnd sapUiMediumMarginBottom" width="200px">
-                                    <core:Icon id="trainingIcon" src="sap-icon://learning-assistant" size="2rem" color="#e9730c" class="sapUiMediumMarginBottom"/>
-                                    <Title id="trainingTitle" text="SAP Learning Hub" level="H6"/>
-                                    <Text id="trainingDesc" text="Official training platform" class="sapUiContentLabelColor"/>
-                                </VBox>
-                                <VBox id="practiceBox" class="sapUiMediumMarginBottom" width="200px">
-                                    <core:Icon id="practiceIcon" src="sap-icon://lab" size="2rem" color="#bb0000" class="sapUiMediumMarginBottom"/>
-                                    <Title id="practiceTitle" text="SAP Sandbox" level="H6"/>
-                                    <Text id="practiceDesc" text="Hands-on practice environment" class="sapUiContentLabelColor"/>
-                                </VBox>
-                            </HBox>
+                            <List id="resourcesList" items="{/learningResources}" mode="None">
+                                <CustomListItem id="resourceItem" type="Active" press="onOpenLearningResource">
+                                    <content>
+                                        <HBox id="resourceItemBox" justifyContent="SpaceBetween" alignItems="Center" class="sapUiMediumMargin">
+                                            <HBox id="resourceInfoBox" alignItems="Center" class="sapUiMediumMarginEnd">
+                                                <core:Icon id="resourceIcon" src="{icon}" size="2rem" color="{color}" class="sapUiMediumMarginEnd"/>
+                                                <VBox id="resourceContent">
+                                                    <Title id="resourceTitle" text="{name}" level="H6"/>
+                                                    <Text id="resourceDesc" text="{description}" class="sapUiContentLabelColor"/>
+                                                    <Text id="resourceType" text="Type: {type}" class="sapUiContentLabelColor sapUiTinyMarginTop"/>
+                                                </VBox>
+                                            </HBox>
+                                            <Button id="resourceActionBtn" text="Open Resource" type="Emphasized" press="onOpenLearningResource">
+                                                <customData>
+                                                    <core:CustomData id="resourceData" key="url" value="{url}"/>
+                                                    <core:CustomData id="resourceNameData" key="resourceName" value="{name}"/>
+                                                </customData>
+                                            </Button>
+                                        </HBox>
+                                    </content>
+                                </CustomListItem>
+                            </List>
 
-                            <!-- Learning Tips -->
-                            <VBox id="tipsBox" class="sapUiMediumMarginTop">
-                                <Title id="tipsTitle" text="💡 Learning Tips" level="H6" class="sapUiMediumMarginBottom"/>
-                                <Text id="tip1" text="• Start with SAP GUI navigation before moving to complex modules" class="sapUiTinyMarginBottom"/>
-                                <Text id="tip2" text="• Practice transaction codes daily to build muscle memory" class="sapUiTinyMarginBottom"/>
-                                <Text id="tip3" text="• Join SAP Community forums for real-world problem solving" class="sapUiTinyMarginBottom"/>
-                                <Text id="tip4" text="• Complete hands-on exercises in each module" class="sapUiTinyMarginBottom"/>
-                                <Text id="tip5" text="• Take notes on business processes, not just technical steps"/>
-                            </VBox>
                         </VBox>
                     </content>
                 </Panel>

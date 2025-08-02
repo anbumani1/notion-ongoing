@@ -1,5 +1,7 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+// Load environment variables
 require('dotenv').config();
+
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 /**
  * Mock Google AI Service for testing and fallback scenarios

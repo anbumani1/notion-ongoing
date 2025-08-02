@@ -3,8 +3,10 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
-    "sap/ui/core/Fragment"
-], (Controller, JSONModel, MessageToast, MessageBox, Fragment) => {
+    "sap/ui/core/Fragment",
+    "project1/service/NotesDatabase",
+    "project1/service/BlockManager"
+], (Controller, JSONModel, MessageToast, MessageBox, Fragment, NotesDatabase, BlockManager) => {
     "use strict";
 
     return Controller.extend("project1.controller.EmployeeDashboard", {
@@ -15,10 +17,29 @@ sap.ui.define([
                 this._loadEmployeeData();
                 this._startTimeUpdater();
                 this._initializeNavigation();
+                this._initializeNotesSystem();
                 console.log("EmployeeDashboard initialization completed successfully");
             } catch (error) {
                 console.error("Error initializing EmployeeDashboard:", error);
             }
+        },
+
+        /**
+         * Initialize the Notion-like notes system
+         */
+        _initializeNotesSystem() {
+            // Initialize database
+            this._notesDatabase = new NotesDatabase();
+
+            // Initialize block manager
+            this._blockManager = new BlockManager(this._notesDatabase);
+
+            // Auto-save settings
+            this._autoSaveEnabled = true;
+            this._autoSaveInterval = null;
+            this._currentNoteId = null;
+
+            console.log("Notion-like notes system initialized");
         },
 
         _initializeNavigation() {
@@ -872,361 +893,248 @@ Feel free to ask me anything specific about your onboarding journey!`;
         },
 
         _loadLearningData() {
-            // SAP Learning Content - Basic to Advanced
+            // Real SAP Learning Content
             const oLearningModel = new JSONModel({
-                learningProgress: {
-                    overall: 45,
-                    completed: 8,
-                    inProgress: 5,
-                    certificates: 3,
-                    totalHours: 156,
-                    streak: 12
-                },
 
-                // SAP Learning Paths from Basic to Advanced
+                // Real SAP Learning Paths - Basic to Advanced
                 learningPaths: [
                     {
-                        id: "SAP_BASIC",
-                        name: "SAP Fundamentals (Basic)",
-                        description: "Introduction to SAP ecosystem, navigation, and core concepts",
+                        id: "SAP_BASICS",
+                        name: "SAP Basics and Navigation",
+                        description: "Learn the fundamentals of SAP software, including navigation, basic concepts, and system overview. Perfect starting point for SAP beginners.",
                         level: "Beginner",
-                        progress: 85,
-                        totalCourses: 8,
-                        completedCourses: 7,
-                        estimatedHours: 24,
-                        dueDate: "2024-12-30",
-                        status: "In Progress",
+                        duration: "8-12 hours",
+                        certification: "SAP Certified User",
                         icon: "sap-icon://learning-assistant",
-                        color: "#107e3e"
+                        color: "#107e3e",
+                        url: "https://learning.sap.com"
                     },
                     {
-                        id: "SAP_INTERMEDIATE",
-                        name: "SAP Business Processes (Intermediate)",
-                        description: "Core business modules: FI/CO, MM, SD, HR, and integration",
+                        id: "SAP_S4HANA",
+                        name: "SAP S/4HANA Fundamentals",
+                        description: "Comprehensive introduction to SAP S/4HANA including Finance, Procurement, Manufacturing, and Sales modules.",
                         level: "Intermediate",
-                        progress: 35,
-                        totalCourses: 12,
-                        completedCourses: 4,
-                        estimatedHours: 48,
-                        dueDate: "2025-02-28",
-                        status: "In Progress",
+                        duration: "20-30 hours",
+                        certification: "SAP S/4HANA Certified",
                         icon: "sap-icon://business-suite",
-                        color: "#e9730c"
+                        color: "#0070f2",
+                        url: "https://learning.sap.com/courses"
                     },
                     {
-                        id: "SAP_ADVANCED",
-                        name: "SAP Development & Customization (Advanced)",
-                        description: "ABAP programming, Fiori development, and system customization",
-                        level: "Advanced",
-                        progress: 0,
-                        totalCourses: 15,
-                        completedCourses: 0,
-                        estimatedHours: 80,
-                        dueDate: "2025-06-30",
-                        status: "Not Started",
-                        icon: "sap-icon://developer-settings",
-                        color: "#bb0000"
-                    },
-                    {
-                        id: "SAP_EXPERT",
-                        name: "SAP Architecture & Innovation (Expert)",
-                        description: "S/4HANA, Cloud solutions, AI/ML integration, and enterprise architecture",
-                        level: "Expert",
-                        progress: 0,
-                        totalCourses: 20,
-                        completedCourses: 0,
-                        estimatedHours: 120,
-                        dueDate: "2025-12-31",
-                        status: "Locked",
-                        icon: "sap-icon://cloud",
-                        color: "#6a6d70"
-                    }
-                ],
-                // Current SAP Courses with Real Content
-                currentCourses: [
-                    // BASIC LEVEL COURSES
-                    {
-                        id: "SAP_001",
-                        name: "Introduction to SAP ERP",
-                        description: "Overview of SAP ecosystem, history, and core principles of enterprise resource planning",
-                        level: "Basic",
-                        progress: 100,
-                        dueDate: "Completed on Dec 5, 2024",
-                        status: "Completed",
-                        instructor: "Dr. Sarah Mueller",
-                        duration: "3 hours",
-                        rating: 4.9,
-                        certificate: true,
-                        topics: ["SAP History", "ERP Concepts", "SAP Modules Overview", "Business Benefits"],
-                        pathId: "SAP_BASIC"
-                    },
-                    {
-                        id: "SAP_002",
-                        name: "SAP GUI Navigation & Basics",
-                        description: "Master SAP GUI interface, transaction codes, and basic navigation techniques",
-                        level: "Basic",
-                        progress: 100,
-                        dueDate: "Completed on Dec 8, 2024",
-                        status: "Completed",
-                        instructor: "Michael Chen",
-                        duration: "2.5 hours",
-                        rating: 4.7,
-                        certificate: true,
-                        topics: ["SAP GUI Interface", "Transaction Codes", "Menu Navigation", "Favorites & Shortcuts"],
-                        pathId: "SAP_BASIC"
-                    },
-                    {
-                        id: "SAP_003",
-                        name: "SAP Data Management Fundamentals",
-                        description: "Understanding master data, organizational structures, and data integrity in SAP",
-                        level: "Basic",
-                        progress: 90,
-                        dueDate: "Dec 20, 2024",
-                        status: "In Progress",
-                        instructor: "Jennifer Liu",
-                        duration: "4 hours",
-                        rating: 4.8,
-                        certificate: false,
-                        topics: ["Master Data Concepts", "Organizational Units", "Data Validation", "Data Governance"],
-                        pathId: "SAP_BASIC"
-                    },
-
-                    // INTERMEDIATE LEVEL COURSES
-                    {
-                        id: "SAP_101",
-                        name: "SAP Financial Accounting (FI)",
-                        description: "Core financial processes: GL accounting, AP/AR, asset accounting, and financial reporting",
-                        level: "Intermediate",
-                        progress: 65,
-                        dueDate: "Jan 15, 2025",
-                        status: "In Progress",
-                        instructor: "Robert Schmidt",
-                        duration: "8 hours",
-                        rating: 4.6,
-                        certificate: false,
-                        topics: ["General Ledger", "Accounts Payable", "Accounts Receivable", "Asset Accounting", "Financial Reporting"],
-                        pathId: "SAP_INTERMEDIATE"
-                    },
-                    {
-                        id: "SAP_102",
-                        name: "SAP Materials Management (MM)",
-                        description: "Procurement processes, inventory management, and vendor management in SAP",
-                        level: "Intermediate",
-                        progress: 40,
-                        dueDate: "Jan 30, 2025",
-                        status: "In Progress",
-                        instructor: "Anna Weber",
-                        duration: "6 hours",
-                        rating: 4.5,
-                        certificate: false,
-                        topics: ["Purchase Requisitions", "Purchase Orders", "Goods Receipt", "Invoice Verification", "Inventory Management"],
-                        pathId: "SAP_INTERMEDIATE"
-                    },
-                    {
-                        id: "SAP_103",
-                        name: "SAP Sales & Distribution (SD)",
-                        description: "Sales order processing, pricing, shipping, and billing in SAP SD module",
-                        level: "Intermediate",
-                        progress: 0,
-                        dueDate: "Feb 15, 2025",
-                        status: "Not Started",
-                        instructor: "Thomas Braun",
-                        duration: "7 hours",
-                        rating: 4.7,
-                        certificate: false,
-                        topics: ["Sales Orders", "Pricing Procedures", "Delivery Processing", "Billing", "Credit Management"],
-                        pathId: "SAP_INTERMEDIATE"
-                    },
-
-                    // ADVANCED LEVEL COURSES
-                    {
-                        id: "SAP_201",
-                        name: "ABAP Programming Fundamentals",
-                        description: "Introduction to ABAP language, data types, and basic programming constructs",
-                        level: "Advanced",
-                        progress: 0,
-                        dueDate: "Mar 30, 2025",
-                        status: "Locked",
-                        instructor: "Dr. Klaus Hoffmann",
-                        duration: "12 hours",
-                        rating: 4.8,
-                        certificate: false,
-                        topics: ["ABAP Syntax", "Data Types", "Internal Tables", "Modularization", "Debugging"],
-                        pathId: "SAP_ADVANCED"
-                    },
-                    {
-                        id: "SAP_202",
+                        id: "SAP_FIORI",
                         name: "SAP Fiori Development",
-                        description: "Building modern UIs with SAP Fiori, UI5, and OData services",
+                        description: "Learn to develop modern, responsive SAP Fiori applications using UI5, OData services, and SAP Cloud Platform.",
                         level: "Advanced",
-                        progress: 0,
-                        dueDate: "Apr 30, 2025",
-                        status: "Locked",
-                        instructor: "Maria Gonzalez",
-                        duration: "15 hours",
-                        rating: 4.9,
-                        certificate: false,
-                        topics: ["Fiori Architecture", "UI5 Development", "OData Services", "Fiori Launchpad", "Responsive Design"],
-                        pathId: "SAP_ADVANCED"
-                    }
-                ],
-                // SAP Certificates Earned
-                certificates: [
-                    {
-                        id: "SAP_CERT_001",
-                        name: "SAP Certified User - SAP ERP",
-                        issuedDate: "2024-12-05",
-                        validUntil: "2026-12-05",
-                        credentialId: "SAP-ERP-2024-001-AW",
-                        level: "Basic",
-                        badgeUrl: "https://www.sap.com/training-certification/badges/"
+                        duration: "40-60 hours",
+                        certification: "SAP Fiori Developer",
+                        icon: "sap-icon://developer-settings",
+                        color: "#e9730c",
+                        url: "https://developers.sap.com/tutorial-navigator.html"
                     },
                     {
-                        id: "SAP_CERT_002",
-                        name: "SAP Certified User - SAP GUI Navigation",
-                        issuedDate: "2024-12-08",
-                        validUntil: "2026-12-08",
-                        credentialId: "SAP-GUI-2024-002-AW",
-                        level: "Basic",
-                        badgeUrl: "https://www.sap.com/training-certification/badges/"
+                        id: "SAP_ANALYTICS",
+                        name: "SAP Analytics Cloud",
+                        description: "Master business intelligence and analytics with SAP Analytics Cloud, including data modeling, visualization, and planning.",
+                        level: "Intermediate",
+                        duration: "25-35 hours",
+                        certification: "SAP Analytics Certified",
+                        icon: "sap-icon://chart-axis",
+                        color: "#bb0000",
+                        url: "https://learning.sap.com/learning-journeys"
                     },
                     {
-                        id: "SAP_CERT_003",
-                        name: "SAP Certified Associate - Data Management",
-                        issuedDate: "2024-12-15",
-                        validUntil: "2027-12-15",
-                        credentialId: "SAP-DM-2024-003-AW",
-                        level: "Associate",
-                        badgeUrl: "https://www.sap.com/training-certification/badges/"
+                        id: "SAP_INTEGRATION",
+                        name: "SAP Integration Suite",
+                        description: "Learn enterprise integration patterns, API management, and cloud integration using SAP Integration Suite.",
+                        level: "Advanced",
+                        duration: "30-45 hours",
+                        certification: "SAP Integration Specialist",
+                        icon: "sap-icon://connected",
+                        color: "#5b738b",
+                        url: "https://open.sap.com"
                     }
                 ],
-
-                // Learning Resources
-                resources: [
+                // Real SAP Learning Resources
+                learningResources: [
                     {
+                        name: "SAP Learning Hub",
+                        description: "Official SAP training platform with courses, learning journeys, and certifications",
+                        type: "Training Platform",
+                        icon: "sap-icon://learning-assistant",
+                        color: "#0070f2",
+                        url: "https://learning.sap.com"
+                    },
+                    {
+                        name: "SAP Help Portal",
+                        description: "Comprehensive documentation, guides, and technical references for all SAP products",
                         type: "Documentation",
-                        title: "SAP Help Portal",
-                        url: "https://help.sap.com",
-                        description: "Official SAP documentation and guides",
-                        icon: "sap-icon://document"
+                        icon: "sap-icon://document",
+                        color: "#107e3e",
+                        url: "https://help.sap.com"
                     },
                     {
+                        name: "SAP Community",
+                        description: "Connect with SAP experts, ask questions, and share knowledge with the global SAP community",
                         type: "Community",
-                        title: "SAP Community",
-                        url: "https://community.sap.com",
-                        description: "Connect with SAP experts and developers",
-                        icon: "sap-icon://group"
+                        icon: "sap-icon://group",
+                        color: "#e9730c",
+                        url: "https://community.sap.com"
                     },
                     {
-                        type: "Training",
-                        title: "SAP Learning Hub",
-                        url: "https://learning.sap.com",
-                        description: "Official SAP training platform",
-                        icon: "sap-icon://learning-assistant"
+                        name: "SAP Developer Center",
+                        description: "Resources for developers including tutorials, APIs, SDKs, and development tools",
+                        type: "Development",
+                        icon: "sap-icon://developer-settings",
+                        color: "#bb0000",
+                        url: "https://developers.sap.com"
                     },
                     {
-                        type: "Practice",
-                        title: "SAP Sandbox Environment",
-                        url: "https://developers.sap.com/trials-downloads.html",
-                        description: "Free SAP system for hands-on practice",
-                        icon: "sap-icon://lab"
+                        name: "SAP Trial Systems",
+                        description: "Free access to SAP systems for hands-on practice and learning",
+                        type: "Practice Environment",
+                        icon: "sap-icon://lab",
+                        color: "#5b738b",
+                        url: "https://developers.sap.com/trials-downloads.html"
+                    },
+                    {
+                        name: "openSAP",
+                        description: "Free online courses on latest SAP innovations, technologies, and business trends",
+                        type: "Free Courses",
+                        icon: "sap-icon://course-book",
+                        color: "#f0ab00",
+                        url: "https://open.sap.com"
                     }
                 ],
 
-                // Learning Tips
-                tips: [
-                    "Start with SAP GUI navigation before moving to complex modules",
-                    "Practice transaction codes daily to build muscle memory",
-                    "Join SAP Community forums for real-world problem solving",
-                    "Complete hands-on exercises in each module",
-                    "Take notes on business processes, not just technical steps"
-                ]
+
+
             });
             this._oLearningDialog.setModel(oLearningModel);
         },
 
-        _loadNotesData() {
-            // Comprehensive mock notes data
+        async _loadNotesData() {
+            try {
+                // Load notes from database
+                const notes = await this._notesDatabase.getAllNotes();
+
+                // If no notes exist, create some sample notes
+                if (notes.length === 0) {
+                    await this._createSampleNotes();
+                    const updatedNotes = await this._notesDatabase.getAllNotes();
+                    this._setupNotesModel(updatedNotes);
+                } else {
+                    this._setupNotesModel(notes);
+                }
+            } catch (error) {
+                console.error("Error loading notes:", error);
+                MessageToast.show("Error loading notes");
+                // Fallback to empty model
+                this._setupNotesModel([]);
+            }
+        },
+
+        /**
+         * Setup the notes model
+         */
+        _setupNotesModel(notes) {
             const oNotesModel = new JSONModel({
-                notes: [
-                    {
-                        id: "NOTE001",
-                        title: "Team Standup - Dec 12, 2024",
-                        preview: "Daily standup discussion points, sprint progress, and blockers...",
-                        content: "# Team Standup - December 12, 2024\n\n## Attendees\n- Sarah Johnson (Manager)\n- Alex Rodriguez (Senior Dev)\n- Jennifer Liu (Product Owner)\n- Alice Wilson (Intern)\n\n## Sprint Progress\n- **Completed**: User authentication module (95%)\n- **In Progress**: API integration for user profiles\n- **Blocked**: Waiting for database schema approval\n\n## Discussion Points\n- Code review process improvements\n- New intern onboarding feedback\n- Sprint retrospective planning\n\n## Action Items\n- [ ] Alice: Complete code review training\n- [ ] Alex: Review PR #123\n- [ ] Sarah: Schedule 1:1 with Alice\n\n## Next Meeting\nDecember 13, 2024 at 9:00 AM",
-                        lastModified: "2 hours ago",
-                        created: "Dec 12, 2024",
-                        wordCount: 98,
-                        charCount: 612,
-                        tags: ["meeting", "standup", "team"],
-                        category: "Work"
-                    },
-                    {
-                        id: "NOTE002",
-                        title: "Learning Goals & Development Plan",
-                        preview: "Personal development objectives and skill improvement roadmap...",
-                        content: "# My Learning & Development Plan\n\n## Technical Skills (Priority: High)\n\n### Frontend Development\n- **React.js**: Complete advanced course by Jan 2025\n- **TypeScript**: Practice with real projects\n- **Testing**: Learn Jest and React Testing Library\n\n### Backend Development\n- **Node.js**: Build REST APIs\n- **Database Design**: PostgreSQL and MongoDB\n- **Cloud Services**: AWS basics\n\n## Soft Skills (Priority: Medium)\n\n### Communication\n- **Public Speaking**: Join Toastmasters club\n- **Technical Writing**: Improve documentation skills\n- **Presentation**: Practice demo sessions\n\n### Leadership\n- **Project Management**: Scrum certification\n- **Mentoring**: Help other interns\n- **Team Collaboration**: Cross-functional projects\n\n## Timeline\n- **Q1 2025**: Focus on React and TypeScript\n- **Q2 2025**: Backend development and databases\n- **Q3 2025**: Cloud services and DevOps\n- **Q4 2025**: Leadership and mentoring skills",
-                        lastModified: "1 day ago",
-                        created: "Dec 10, 2024",
-                        wordCount: 156,
-                        charCount: 1024,
-                        tags: ["goals", "learning", "career"],
-                        category: "Personal"
-                    },
-                    {
-                        id: "NOTE003",
-                        title: "Code Review Checklist",
-                        preview: "Best practices and checklist for conducting effective code reviews...",
-                        content: "# Code Review Checklist\n\n## Before Starting Review\n- [ ] Understand the requirements\n- [ ] Check if tests are included\n- [ ] Verify branch is up to date\n\n## Code Quality\n- [ ] **Readability**: Code is clean and well-commented\n- [ ] **Naming**: Variables and functions have meaningful names\n- [ ] **Structure**: Proper separation of concerns\n- [ ] **Performance**: No obvious performance issues\n\n## Security\n- [ ] Input validation is present\n- [ ] No hardcoded secrets or passwords\n- [ ] Proper error handling\n- [ ] SQL injection prevention\n\n## Testing\n- [ ] Unit tests cover new functionality\n- [ ] Edge cases are tested\n- [ ] Tests are meaningful and not just for coverage\n\n## Documentation\n- [ ] README updated if needed\n- [ ] API documentation updated\n- [ ] Inline comments for complex logic\n\n## Feedback Guidelines\n- Be constructive and specific\n- Suggest improvements, don't just point out problems\n- Ask questions to understand the approach\n- Acknowledge good practices",
-                        lastModified: "3 days ago",
-                        created: "Dec 9, 2024",
-                        wordCount: 142,
-                        charCount: 1156,
-                        tags: ["code-review", "checklist", "best-practices"],
-                        category: "Work"
-                    },
-                    {
-                        id: "NOTE004",
-                        title: "Onboarding Experience Feedback",
-                        preview: "Reflections on the intern onboarding process and suggestions...",
-                        content: "# Onboarding Experience - Week 1 Reflection\n\n## What Went Well\n- **Warm Welcome**: Team was very welcoming and supportive\n- **Clear Documentation**: Setup guides were comprehensive\n- **Mentor Assignment**: Sarah is an excellent mentor\n- **Learning Resources**: Great access to courses and materials\n\n## Challenges Faced\n- **Information Overload**: Too much information in first few days\n- **Tool Setup**: Some development tools had compatibility issues\n- **Access Permissions**: Delayed access to some systems\n\n## Suggestions for Improvement\n- **Gradual Introduction**: Spread orientation over 2 weeks\n- **Buddy System**: Pair new interns with recent hires\n- **Pre-boarding**: Send setup instructions before start date\n- **Regular Check-ins**: Weekly feedback sessions in first month\n\n## Personal Action Items\n- Schedule regular 1:1s with mentor\n- Join intern community group\n- Set up personal learning plan\n- Start contributing to team projects\n\n## Overall Rating: 8/10\nGreat experience overall with room for minor improvements.",
-                        lastModified: "5 days ago",
-                        created: "Dec 7, 2024",
-                        wordCount: 168,
-                        charCount: 1289,
-                        tags: ["onboarding", "feedback", "reflection"],
-                        category: "Personal"
-                    },
-                    {
-                        id: "NOTE005",
-                        title: "Project Ideas & Innovation",
-                        preview: "Creative project ideas and potential improvements for current systems...",
-                        content: "# Project Ideas & Innovation Opportunities\n\n## Internal Tool Improvements\n\n### Employee Dashboard Enhancement\n- **Dark Mode**: Add theme switching capability\n- **Mobile App**: Native mobile version for on-the-go access\n- **AI Assistant**: Chatbot for common HR queries\n- **Analytics**: Personal productivity insights\n\n### Development Workflow\n- **Automated Testing**: Improve CI/CD pipeline\n- **Code Quality**: Implement automated code review tools\n- **Documentation**: Auto-generate API docs from code\n\n## New Project Concepts\n\n### Intern Collaboration Platform\n- **Peer Learning**: Match interns with similar interests\n- **Project Showcase**: Gallery of intern projects\n- **Skill Exchange**: Intern-to-intern teaching platform\n\n### Sustainability Initiative\n- **Carbon Footprint Tracker**: Monitor team's environmental impact\n- **Green Commute**: App to encourage eco-friendly transportation\n- **Paperless Office**: Digitize remaining manual processes\n\n## Implementation Strategy\n- Start with small proof-of-concept\n- Get feedback from team members\n- Present to management if successful\n- Consider open-source contributions",
-                        lastModified: "1 week ago",
-                        created: "Dec 5, 2024",
-                        wordCount: 189,
-                        charCount: 1456,
-                        tags: ["projects", "innovation", "ideas"],
-                        category: "Work"
-                    }
-                ],
+                notes: notes,
+
                 currentNote: {
                     id: "",
-                    title: "New Note",
-                    content: "",
-                    created: new Date().toLocaleDateString(),
-                    lastModified: new Date().toLocaleDateString(),
+                    title: "Welcome to Notion-like Notes! 📝",
+                    blocks: [],
+                    created: new Date().toISOString(),
+                    lastModified: new Date().toISOString(),
                     wordCount: 0,
                     charCount: 0,
-                    tags: [],
-                    category: "Personal"
+                    category: "Personal",
+                    preview: "Start creating your first note..."
                 },
-                categories: ["Work", "Personal", "Learning", "Projects"],
-                tags: ["meeting", "standup", "team", "goals", "learning", "career", "code-review", "checklist", "best-practices", "onboarding", "feedback", "reflection", "projects", "innovation", "ideas"],
-                searchQuery: "",
-                selectedCategory: "All"
+                categories: ["Personal", "Work", "Projects", "Ideas", "Meeting Notes"],
+                autoSaveEnabled: this._autoSaveEnabled
             });
             this._oNotesDialog.setModel(oNotesModel);
+        },
+
+        /**
+         * Create sample notes for demonstration
+         */
+        async _createSampleNotes() {
+            const sampleNotes = [
+                {
+                    title: "🚀 Welcome to Notion-like Notes",
+                    category: "Personal",
+                    tags: ["welcome", "tutorial"]
+                },
+                {
+                    title: "📋 Project Planning Template",
+                    category: "Work",
+                    tags: ["template", "project"]
+                }
+            ];
+
+            for (const noteData of sampleNotes) {
+                try {
+                    const note = await this._notesDatabase.createNote(noteData);
+
+                    // Create sample blocks for the welcome note
+                    if (note.title.includes("Welcome")) {
+                        await this._createWelcomeBlocks(note.id);
+                    } else if (note.title.includes("Project")) {
+                        await this._createProjectBlocks(note.id);
+                    }
+                } catch (error) {
+                    console.error("Error creating sample note:", error);
+                }
+            }
+        },
+
+        /**
+         * Create welcome blocks
+         */
+        async _createWelcomeBlocks(noteId) {
+            const welcomeBlocks = [
+                { type: "heading_1", content: "Welcome to Notion-like Notes! 🎉", order: 0 },
+                { type: "paragraph", content: "This is a powerful note-taking system inspired by Notion.", order: 1 },
+                { type: "heading_2", content: "Features", order: 2 },
+                { type: "bulleted_list_item", content: "Block-based editing", order: 3 },
+                { type: "bulleted_list_item", content: "Real-time auto-save", order: 4 },
+                { type: "bulleted_list_item", content: "SQLite/IndexedDB storage", order: 5 },
+                { type: "bulleted_list_item", content: "Rich text formatting", order: 6 },
+                { type: "heading_2", content: "Getting Started", order: 7 },
+                { type: "numbered_list_item", content: "Click '+ Add Block' to create new content", order: 8 },
+                { type: "numbered_list_item", content: "Use different block types for structure", order: 9 },
+                { type: "numbered_list_item", content: "Your notes are automatically saved", order: 10 },
+                { type: "quote", content: "Start writing and see the magic happen!", order: 11 }
+            ];
+
+            for (const blockData of welcomeBlocks) {
+                await this._blockManager.createBlock(noteId, blockData);
+            }
+        },
+
+        /**
+         * Create project planning blocks
+         */
+        async _createProjectBlocks(noteId) {
+            const projectBlocks = [
+                { type: "heading_1", content: "Project Planning Template 📋", order: 0 },
+                { type: "heading_2", content: "Project Overview", order: 1 },
+                { type: "paragraph", content: "Brief description of the project goals and objectives.", order: 2 },
+                { type: "heading_2", content: "Tasks", order: 3 },
+                { type: "to_do", content: "Define project scope", order: 4, properties: { checked: false } },
+                { type: "to_do", content: "Create timeline", order: 5, properties: { checked: false } },
+                { type: "to_do", content: "Assign team members", order: 6, properties: { checked: false } },
+                { type: "heading_2", content: "Resources", order: 7 },
+                { type: "bulleted_list_item", content: "Team members", order: 8 },
+                { type: "bulleted_list_item", content: "Budget allocation", order: 9 },
+                { type: "bulleted_list_item", content: "Tools and software", order: 10 }
+            ];
+
+            for (const blockData of projectBlocks) {
+                await this._blockManager.createBlock(noteId, blockData);
+            }
         },
 
         // Dialog Event Handlers
@@ -1324,6 +1232,108 @@ Feel free to ask me anything specific about your onboarding journey!`;
             oModel.setProperty("/acknowledgmentEnabled", false);
         },
 
+        onViewPolicy(oEvent) {
+            const oButton = oEvent.getSource();
+            const sPolicyTitle = oButton.data("policyTitle");
+            const sPolicyId = oButton.data("policyId");
+
+            MessageToast.show(`Opening ${sPolicyTitle}...`);
+
+            // Use the helper method to load policy content
+            this._loadPolicyContent(sPolicyTitle);
+        },
+
+        onDownloadPolicy(oEvent) {
+            const oButton = oEvent.getSource();
+            const sPolicyTitle = oButton.data("policyTitle");
+            const sPolicyId = oButton.data("policyId");
+
+            MessageToast.show(`Downloading ${sPolicyTitle} as PDF...`);
+
+            // Simulate PDF download
+            setTimeout(() => {
+                MessageToast.show(`${sPolicyTitle} downloaded successfully!`);
+            }, 1500);
+        },
+
+        onPrintPolicy() {
+            const oModel = this._oPolicyDialog.getModel();
+            const sPolicyTitle = oModel.getProperty("/selectedPolicy/title");
+
+            MessageToast.show(`Preparing ${sPolicyTitle} for printing...`);
+
+            // Simulate print preparation
+            setTimeout(() => {
+                MessageToast.show("Print dialog opened. Please check your printer settings.");
+            }, 1000);
+        },
+
+        onSharePolicy() {
+            const oModel = this._oPolicyDialog.getModel();
+            const sPolicyTitle = oModel.getProperty("/selectedPolicy/title");
+
+            MessageToast.show(`Generating shareable link for ${sPolicyTitle}...`);
+
+            // Simulate share link generation
+            setTimeout(() => {
+                MessageToast.show("Share link copied to clipboard!");
+            }, 1200);
+        },
+
+        onPolicyItemPress(oEvent) {
+            const oListItem = oEvent.getSource();
+            const oBindingContext = oListItem.getBindingContext();
+            const sPolicyTitle = oBindingContext.getProperty("title");
+
+            MessageToast.show(`Loading ${sPolicyTitle}...`);
+
+            // Use the same logic as onViewPolicy but get data from binding context
+            this._loadPolicyContent(sPolicyTitle);
+        },
+
+        _loadPolicyContent(sPolicyTitle) {
+            // Comprehensive mock policy content (same as in onViewPolicy)
+            const oPolicyContent = {
+                "Employee Handbook": {
+                    title: "Employee Handbook - Complete Guide",
+                    content: "# Employee Handbook\n\n## Welcome to Our Company!\n\nThis handbook contains essential information about our company culture, policies, procedures, and your rights and responsibilities as an employee.\n\n## Table of Contents\n\n### 1. Company Overview\n- Mission, Vision, and Values\n- Organizational Structure\n- History and Milestones\n\n### 2. Employment Policies\n- Equal Opportunity Employment\n- Anti-Discrimination and Harassment\n- Workplace Conduct\n- Attendance and Punctuality\n\n### 3. Benefits and Compensation\n- Salary and Performance Reviews\n- Health Insurance\n- Retirement Plans\n- Paid Time Off\n- Professional Development\n\n### 4. Workplace Guidelines\n- Dress Code\n- Communication Standards\n- Technology Usage\n- Social Media Policy\n\n### 5. Safety and Security\n- Emergency Procedures\n- Incident Reporting\n- Health and Safety Protocols\n\n## Important Notes\n- This handbook is updated annually\n- All employees must acknowledge receipt\n- Questions should be directed to HR\n\n*Last Updated: November 2024*",
+                    lastUpdated: "November 2024",
+                    version: "v2.1",
+                    effectiveDate: "January 1, 2024",
+                    requiresAcknowledgment: true
+                },
+                "Code of Conduct": {
+                    title: "Code of Conduct - Ethical Guidelines",
+                    content: "# Code of Conduct\n\n## Our Commitment to Ethics\n\nOur Code of Conduct outlines the ethical standards and behavioral expectations for all employees, contractors, and business partners.\n\n## Core Principles\n\n### 1. Integrity and Honesty\n- Act with honesty in all business dealings\n- Report unethical behavior promptly\n- Avoid conflicts of interest\n- Maintain accurate records\n\n### 2. Respect for Others\n- Treat all individuals with dignity and respect\n- Embrace diversity and inclusion\n- Maintain a harassment-free workplace\n- Respect privacy and confidentiality\n\n### 3. Professional Excellence\n- Deliver high-quality work\n- Continuously improve skills and knowledge\n- Collaborate effectively with teams\n- Meet commitments and deadlines\n\n### 4. Legal Compliance\n- Follow all applicable laws and regulations\n- Respect intellectual property rights\n- Maintain data protection standards\n- Report legal concerns immediately\n\n## Reporting Violations\n- Contact your manager or HR\n- Use anonymous reporting hotline: 1-800-ETHICS\n- Email: ethics@company.com\n- No retaliation for good faith reports\n\n## Consequences\nViolations may result in disciplinary action, up to and including termination.\n\n*Remember: When in doubt, ask for guidance.*",
+                    lastUpdated: "October 2024",
+                    version: "v1.5",
+                    effectiveDate: "October 1, 2024",
+                    requiresAcknowledgment: true
+                },
+                "Information Security Policy": {
+                    title: "Information Security Policy",
+                    content: "# Information Security Policy\n\n## Purpose\nTo protect company and customer data from unauthorized access, disclosure, modification, or destruction.\n\n## Scope\nApplies to all employees, contractors, and third parties with access to company systems.\n\n## Password Requirements\n- Minimum 12 characters\n- Include uppercase, lowercase, numbers, and symbols\n- Change every 90 days\n- No password reuse for last 12 passwords\n- Use multi-factor authentication where available\n\n## Data Classification\n\n### Public\n- Marketing materials\n- Published documentation\n- General company information\n\n### Internal\n- Employee directories\n- Internal procedures\n- Non-sensitive business data\n\n### Confidential\n- Customer data\n- Financial information\n- Strategic plans\n- Employee personal information\n\n### Restricted\n- Trade secrets\n- Legal documents\n- Security credentials\n- Merger and acquisition data\n\n## Acceptable Use\n- Use company systems only for business purposes\n- No personal software installation\n- Report security incidents immediately\n- Keep software updated\n- Lock workstations when away\n\n## Incident Response\n1. Immediately report suspected security incidents\n2. Contact IT Security: security@company.com\n3. Do not attempt to investigate on your own\n4. Preserve evidence if possible\n\n## Training Requirements\n- Annual security awareness training\n- Phishing simulation exercises\n- Role-specific security training\n\n*Violations may result in disciplinary action and legal consequences.*",
+                    lastUpdated: "December 2024",
+                    version: "v3.0",
+                    effectiveDate: "December 1, 2024",
+                    requiresAcknowledgment: true
+                }
+            };
+
+            const oModel = this._oPolicyDialog.getModel();
+            const oContent = oPolicyContent[sPolicyTitle] || {
+                title: sPolicyTitle,
+                content: "Policy content is being loaded...\n\nPlease contact HR if you need immediate access to this policy.\n\nEmail: hr@company.com\nPhone: (555) 123-4567",
+                lastUpdated: "Recent",
+                version: "v1.0",
+                effectiveDate: "Current",
+                requiresAcknowledgment: false
+            };
+
+            oModel.setProperty("/selectedPolicy", oContent);
+            oModel.setProperty("/acknowledgmentEnabled", false);
+        },
+
         // Formatters
         formatPriorityState(sPriority) {
             switch (sPriority) {
@@ -1400,72 +1410,259 @@ Feel free to ask me anything specific about your onboarding journey!`;
             // TODO: Navigate to full activity history view
         },
 
-        onStartLearningPath(oEvent) {
-            const sPathId = oEvent.getSource().data("pathId");
-            MessageToast.show(`Starting learning path: ${sPathId}`);
-            // TODO: Navigate to specific learning path
+        onOpenLearningPath(oEvent) {
+            const sUrl = oEvent.getSource().data("url");
+            const sPathName = oEvent.getSource().data("pathName") || "SAP Learning";
+
+            if (sUrl) {
+                MessageToast.show(`Opening ${sPathName} in SAP Learning Hub...`);
+                window.open(sUrl, '_blank');
+            } else {
+                // Fallback to main SAP Learning Hub
+                MessageToast.show("Opening SAP Learning Hub...");
+                window.open("https://learning.sap.com", '_blank');
+            }
         },
 
-        onContinueCourse(oEvent) {
-            const oContext = oEvent.getSource().getBindingContext();
-            const sCourseName = oContext.getProperty("name");
-            MessageToast.show(`Continuing course: ${sCourseName}`);
-            // TODO: Navigate to course content
+        onOpenLearningResource(oEvent) {
+            const sUrl = oEvent.getSource().data("url");
+            const sResourceName = oEvent.getSource().data("resourceName") || "SAP Resource";
+
+            if (sUrl) {
+                MessageToast.show(`Opening ${sResourceName}...`);
+                window.open(sUrl, '_blank');
+            } else {
+                // Fallback to main SAP Learning Hub
+                MessageToast.show("Opening SAP Learning Hub...");
+                window.open("https://learning.sap.com", '_blank');
+            }
         },
 
-        onNoteSelect(oEvent) {
+        async onNoteSelect(oEvent) {
             const oSelectedItem = oEvent.getParameter("listItem");
             const oContext = oSelectedItem.getBindingContext();
             const oNote = oContext.getObject();
 
-            // Load selected note into editor
-            const oModel = this._oNotesDialog.getModel();
-            oModel.setProperty("/currentNote", oNote);
-        },
+            try {
+                // Load blocks for the selected note
+                const blocks = await this._blockManager.getBlocksForNote(oNote.id);
 
-        onAddNote() {
-            const oModel = this._oNotesDialog.getModel();
-            const oNewNote = {
-                id: "NOTE" + Date.now(),
-                title: "New Note",
-                content: "",
-                created: new Date().toLocaleDateString(),
-                lastModified: new Date().toLocaleDateString(),
-                wordCount: 0,
-                charCount: 0,
-                tags: [],
-                category: "Personal"
-            };
+                // Set current note with blocks
+                const oModel = this._oNotesDialog.getModel();
+                oModel.setProperty("/currentNote", {
+                    ...oNote,
+                    blocks: blocks
+                });
 
-            oModel.setProperty("/currentNote", oNewNote);
-            MessageToast.show("New note created");
-        },
+                this._currentNoteId = oNote.id;
+                this._renderBlocks(blocks);
 
-        onSaveNote() {
-            const oModel = this._oNotesDialog.getModel();
-            const oCurrentNote = oModel.getProperty("/currentNote");
+                // Start auto-save if enabled
+                if (this._autoSaveEnabled) {
+                    this._startAutoSave();
+                }
 
-            // Update word and character count
-            const sContent = oCurrentNote.content || "";
-            oCurrentNote.wordCount = sContent.split(/\s+/).filter(word => word.length > 0).length;
-            oCurrentNote.charCount = sContent.length;
-            oCurrentNote.lastModified = new Date().toLocaleDateString();
-
-            // Update or add to notes array
-            const aNotes = oModel.getProperty("/notes");
-            const iIndex = aNotes.findIndex(note => note.id === oCurrentNote.id);
-
-            if (iIndex >= 0) {
-                aNotes[iIndex] = oCurrentNote;
-            } else {
-                aNotes.unshift(oCurrentNote);
+            } catch (error) {
+                console.error("Error loading note:", error);
+                MessageToast.show("Error loading note");
             }
-
-            oModel.setProperty("/notes", aNotes);
-            MessageToast.show("Note saved successfully");
         },
 
-        onDeleteNote() {
+        async onAddNote() {
+            try {
+                const noteData = {
+                    title: "Untitled",
+                    category: "Personal",
+                    tags: []
+                };
+
+                const newNote = await this._notesDatabase.createNote(noteData);
+
+                // Add initial paragraph block
+                await this._blockManager.createBlock(newNote.id, {
+                    type: "paragraph",
+                    content: "",
+                    order: 0
+                });
+
+                // Refresh notes list
+                await this._loadNotesData();
+
+                // Select the new note
+                const oModel = this._oNotesDialog.getModel();
+                const blocks = await this._blockManager.getBlocksForNote(newNote.id);
+
+                oModel.setProperty("/currentNote", {
+                    ...newNote,
+                    blocks: blocks
+                });
+
+                this._currentNoteId = newNote.id;
+                this._renderBlocks(blocks);
+
+                MessageToast.show("New note created");
+
+            } catch (error) {
+                console.error("Error creating note:", error);
+                MessageToast.show("Error creating note");
+            }
+        },
+
+        async onSaveNote() {
+            try {
+                const oModel = this._oNotesDialog.getModel();
+                const oCurrentNote = oModel.getProperty("/currentNote");
+
+                if (!oCurrentNote.id) {
+                    MessageToast.show("No note to save");
+                    return;
+                }
+
+                // Calculate word count from all blocks
+                let totalWords = 0;
+                let totalChars = 0;
+                let preview = "";
+
+                if (oCurrentNote.blocks && oCurrentNote.blocks.length > 0) {
+                    oCurrentNote.blocks.forEach(block => {
+                        if (block.content) {
+                            const words = block.content.split(/\s+/).filter(word => word.length > 0);
+                            totalWords += words.length;
+                            totalChars += block.content.length;
+
+                            // Use first non-empty block for preview
+                            if (!preview && block.content.trim()) {
+                                preview = block.content.substring(0, 100) + (block.content.length > 100 ? "..." : "");
+                            }
+                        }
+                    });
+                }
+
+                // Update note in database
+                await this._notesDatabase.updateNote(oCurrentNote.id, {
+                    title: oCurrentNote.title,
+                    wordCount: totalWords,
+                    charCount: totalChars,
+                    preview: preview,
+                    category: oCurrentNote.category
+                });
+
+                // Refresh notes list
+                await this._loadNotesData();
+
+                MessageToast.show("💾 Note saved successfully");
+
+            } catch (error) {
+                console.error("Error saving note:", error);
+                MessageToast.show("Error saving note");
+            }
+        },
+
+        /**
+         * Add a new block
+         */
+        async onAddBlock() {
+            try {
+                if (!this._currentNoteId) {
+                    MessageToast.show("Please select a note first");
+                    return;
+                }
+
+                const oModel = this._oNotesDialog.getModel();
+                const currentBlocks = oModel.getProperty("/currentNote/blocks") || [];
+                const newOrder = currentBlocks.length;
+
+                const newBlock = await this._blockManager.createBlock(this._currentNoteId, {
+                    type: "paragraph",
+                    content: "",
+                    order: newOrder
+                });
+
+                // Update model
+                currentBlocks.push(newBlock);
+                oModel.setProperty("/currentNote/blocks", currentBlocks);
+
+                // Re-render blocks
+                this._renderBlocks(currentBlocks);
+
+                MessageToast.show("Block added");
+
+            } catch (error) {
+                console.error("Error adding block:", error);
+                MessageToast.show("Error adding block");
+            }
+        },
+
+        /**
+         * Add block of specific type
+         */
+        async onAddBlockType(oEvent) {
+            try {
+                const blockType = oEvent.getSource().data("blockType");
+
+                if (!this._currentNoteId) {
+                    MessageToast.show("Please select a note first");
+                    return;
+                }
+
+                const oModel = this._oNotesDialog.getModel();
+                const currentBlocks = oModel.getProperty("/currentNote/blocks") || [];
+                const newOrder = currentBlocks.length;
+
+                let content = "";
+                let properties = {};
+
+                // Set default content based on block type
+                switch (blockType) {
+                    case "heading_1":
+                        content = "Heading 1";
+                        break;
+                    case "heading_2":
+                        content = "Heading 2";
+                        break;
+                    case "heading_3":
+                        content = "Heading 3";
+                        break;
+                    case "to_do":
+                        content = "Todo item";
+                        properties = { checked: false };
+                        break;
+                    case "quote":
+                        content = "Quote text";
+                        break;
+                    case "code":
+                        content = "// Code block";
+                        break;
+                    case "divider":
+                        content = "";
+                        break;
+                    default:
+                        content = "Type your content here...";
+                }
+
+                const newBlock = await this._blockManager.createBlock(this._currentNoteId, {
+                    type: blockType,
+                    content: content,
+                    order: newOrder,
+                    properties: properties
+                });
+
+                // Update model
+                currentBlocks.push(newBlock);
+                oModel.setProperty("/currentNote/blocks", currentBlocks);
+
+                // Re-render blocks
+                this._renderBlocks(currentBlocks);
+
+                MessageToast.show(`${blockType} block added`);
+
+            } catch (error) {
+                console.error("Error adding block:", error);
+                MessageToast.show("Error adding block");
+            }
+        },
+
+        async onDeleteNote() {
             const oModel = this._oNotesDialog.getModel();
             const oCurrentNote = oModel.getProperty("/currentNote");
 
@@ -1475,29 +1672,272 @@ Feel free to ask me anything specific about your onboarding journey!`;
             }
 
             MessageBox.confirm(`Delete note "${oCurrentNote.title}"?`, {
-                onClose: (sAction) => {
+                onClose: async (sAction) => {
                     if (sAction === MessageBox.Action.OK) {
-                        const aNotes = oModel.getProperty("/notes");
-                        const aFilteredNotes = aNotes.filter(note => note.id !== oCurrentNote.id);
-                        oModel.setProperty("/notes", aFilteredNotes);
+                        try {
+                            // Delete from database
+                            await this._notesDatabase.deleteNote(oCurrentNote.id);
 
-                        // Reset current note
-                        oModel.setProperty("/currentNote", {
-                            id: "",
-                            title: "New Note",
-                            content: "",
-                            created: new Date().toLocaleDateString(),
-                            lastModified: new Date().toLocaleDateString(),
-                            wordCount: 0,
-                            charCount: 0,
-                            tags: [],
-                            category: "Personal"
-                        });
+                            // Refresh notes list
+                            await this._loadNotesData();
 
-                        MessageToast.show("Note deleted successfully");
+                            // Reset current note
+                            oModel.setProperty("/currentNote", {
+                                id: "",
+                                title: "Welcome to Notion-like Notes! 📝",
+                                blocks: [],
+                                created: new Date().toISOString(),
+                                lastModified: new Date().toISOString(),
+                                wordCount: 0,
+                                charCount: 0,
+                                category: "Personal",
+                                preview: "Start creating your first note..."
+                            });
+
+                            this._currentNoteId = null;
+                            this._stopAutoSave();
+
+                            // Clear blocks container
+                            this._renderBlocks([]);
+
+                            MessageToast.show("🗑️ Note deleted successfully");
+
+                        } catch (error) {
+                            console.error("Error deleting note:", error);
+                            MessageToast.show("Error deleting note");
+                        }
                     }
                 }
             });
+        },
+
+        /**
+         * Render blocks in the UI
+         */
+        _renderBlocks(blocks) {
+            const blocksContainer = this.byId("dynamicBlocksContainer");
+            if (!blocksContainer) return;
+
+            // Clear existing blocks
+            blocksContainer.destroyItems();
+
+            // Render each block
+            blocks.forEach((block, index) => {
+                const blockControl = this._createBlockControl(block, index);
+                blocksContainer.addItem(blockControl);
+            });
+        },
+
+        /**
+         * Create a control for a block
+         */
+        _createBlockControl(block, index) {
+            const blockContainer = new sap.m.VBox({
+                class: "notion-block",
+                items: [
+                    new sap.m.HBox({
+                        alignItems: "Center",
+                        items: [
+                            new sap.m.Button({
+                                icon: "sap-icon://menu2",
+                                type: "Transparent",
+                                class: "notion-block-handle",
+                                tooltip: "Drag to reorder"
+                            }),
+                            this._createBlockEditor(block)
+                        ]
+                    })
+                ]
+            });
+
+            return blockContainer;
+        },
+
+        /**
+         * Create editor for a block based on its type
+         */
+        _createBlockEditor(block) {
+            switch (block.type) {
+                case "heading_1":
+                case "heading_2":
+                case "heading_3":
+                case "paragraph":
+                case "bulleted_list_item":
+                case "numbered_list_item":
+                case "quote":
+                case "code":
+                    return new sap.m.TextArea({
+                        value: block.content,
+                        rows: 1,
+                        width: "100%",
+                        class: `notion-block-input notion-${block.type.replace('_', '-')}`,
+                        placeholder: this._getPlaceholderForBlockType(block.type),
+                        liveChange: (oEvent) => {
+                            this._onBlockContentChange(block.id, oEvent.getParameter("value"));
+                        }
+                    });
+                case "to_do":
+                    return new sap.m.HBox({
+                        alignItems: "Center",
+                        items: [
+                            new sap.m.CheckBox({
+                                selected: block.properties?.checked || false,
+                                select: (oEvent) => {
+                                    this._onTodoToggle(block.id, oEvent.getParameter("selected"));
+                                }
+                            }),
+                            new sap.m.TextArea({
+                                value: block.content,
+                                rows: 1,
+                                width: "100%",
+                                class: "notion-block-input notion-todo",
+                                placeholder: "Todo item",
+                                liveChange: (oEvent) => {
+                                    this._onBlockContentChange(block.id, oEvent.getParameter("value"));
+                                }
+                            })
+                        ]
+                    });
+                case "divider":
+                    return new sap.m.Panel({
+                        height: "1px",
+                        class: "notion-divider"
+                    });
+                default:
+                    return new sap.m.Text({
+                        text: block.content || "Unknown block type"
+                    });
+            }
+        },
+
+        /**
+         * Get placeholder text for block type
+         */
+        _getPlaceholderForBlockType(type) {
+            const placeholders = {
+                "heading_1": "Heading 1",
+                "heading_2": "Heading 2",
+                "heading_3": "Heading 3",
+                "paragraph": "Type '/' for commands",
+                "bulleted_list_item": "List item",
+                "numbered_list_item": "Numbered item",
+                "quote": "Quote",
+                "code": "Code"
+            };
+            return placeholders[type] || "Type here...";
+        },
+
+        /**
+         * Handle block content changes
+         */
+        async _onBlockContentChange(blockId, newContent) {
+            try {
+                await this._blockManager.updateBlock(blockId, { content: newContent });
+
+                // Update model
+                const oModel = this._oNotesDialog.getModel();
+                const blocks = oModel.getProperty("/currentNote/blocks");
+                const blockIndex = blocks.findIndex(b => b.id === blockId);
+                if (blockIndex !== -1) {
+                    blocks[blockIndex].content = newContent;
+                    oModel.setProperty("/currentNote/blocks", blocks);
+                }
+
+            } catch (error) {
+                console.error("Error updating block:", error);
+            }
+        },
+
+        /**
+         * Handle todo toggle
+         */
+        async _onTodoToggle(blockId, checked) {
+            try {
+                await this._blockManager.updateBlock(blockId, {
+                    properties: { checked: checked }
+                });
+
+                // Update model
+                const oModel = this._oNotesDialog.getModel();
+                const blocks = oModel.getProperty("/currentNote/blocks");
+                const blockIndex = blocks.findIndex(b => b.id === blockId);
+                if (blockIndex !== -1) {
+                    blocks[blockIndex].properties = { checked: checked };
+                    oModel.setProperty("/currentNote/blocks", blocks);
+                }
+
+            } catch (error) {
+                console.error("Error updating todo:", error);
+            }
+        },
+
+        /**
+         * Start auto-save
+         */
+        _startAutoSave() {
+            this._stopAutoSave(); // Clear any existing interval
+
+            if (this._autoSaveEnabled && this._currentNoteId) {
+                this._autoSaveInterval = setInterval(() => {
+                    this.onSaveNote();
+                }, 5000); // Auto-save every 5 seconds
+            }
+        },
+
+        /**
+         * Stop auto-save
+         */
+        _stopAutoSave() {
+            if (this._autoSaveInterval) {
+                clearInterval(this._autoSaveInterval);
+                this._autoSaveInterval = null;
+            }
+        },
+
+        /**
+         * Toggle auto-save
+         */
+        onToggleAutoSave() {
+            this._autoSaveEnabled = !this._autoSaveEnabled;
+
+            const oModel = this._oNotesDialog.getModel();
+            oModel.setProperty("/autoSaveEnabled", this._autoSaveEnabled);
+
+            const toggleButton = this.byId("autoSaveToggle");
+            if (toggleButton) {
+                toggleButton.setText(this._autoSaveEnabled ? "🔄 Auto-save: ON" : "⏸️ Auto-save: OFF");
+            }
+
+            if (this._autoSaveEnabled) {
+                this._startAutoSave();
+                MessageToast.show("Auto-save enabled");
+            } else {
+                this._stopAutoSave();
+                MessageToast.show("Auto-save disabled");
+            }
+        },
+
+        /**
+         * Handle title changes
+         */
+        async onTitleChange(oEvent) {
+            const newTitle = oEvent.getParameter("value");
+
+            if (this._currentNoteId && newTitle) {
+                try {
+                    await this._notesDatabase.updateNote(this._currentNoteId, { title: newTitle });
+
+                    // Update model
+                    const oModel = this._oNotesDialog.getModel();
+                    oModel.setProperty("/currentNote/title", newTitle);
+
+                    // Refresh notes list to show updated title
+                    await this._loadNotesData();
+
+                } catch (error) {
+                    console.error("Error updating title:", error);
+                }
+            }
         }
     });
 });

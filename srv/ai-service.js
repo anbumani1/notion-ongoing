@@ -16,7 +16,7 @@ module.exports = cds.service.impl(async function() {
                 req.error(404, 'Intern not found');
             }
             
-            const welcomeMessage = await openaiService.generateOnboardingContent({
+            const welcomeMessage = await googleAIService.generateOnboardingContent({
                 firstName: intern.firstName,
                 lastName: intern.lastName,
                 department: intern.department,
@@ -52,7 +52,7 @@ module.exports = cds.service.impl(async function() {
                 req.error(404, 'Intern not found');
             }
             
-            const learningPlan = await openaiService.generateLearningRecommendations({
+            const learningPlan = await googleAIService.generateLearningRecommendations({
                 firstName: intern.firstName,
                 lastName: intern.lastName,
                 department: intern.department,
@@ -93,13 +93,9 @@ module.exports = cds.service.impl(async function() {
             const tasks = await SELECT.from(Tasks).where({ intern_ID: ID });
             const completedTasks = tasks.filter(task => task.status === 'Completed').length;
             
-            const feedback = await openaiService.generateProgressFeedback({
-                internName: `${intern.firstName} ${intern.lastName}`,
-                completedTasks,
-                totalTasks: tasks.length,
-                status: intern.status,
-                focusAreas: intern.department
-            });
+            const feedback = await googleAIService.generateContent(`Generate constructive progress feedback for intern ${intern.firstName} ${intern.lastName} in ${intern.department}.
+            They have completed ${completedTasks} out of ${tasks.length} tasks. Current status: ${intern.status}.
+            Provide encouraging feedback with specific suggestions for improvement and next steps.`);
             
             // Store the generated content
             await INSERT.into(AIGeneratedContent).entries({
@@ -130,12 +126,12 @@ module.exports = cds.service.impl(async function() {
                 req.error(404, 'Task not found');
             }
             
-            const description = await openaiService.generateTaskDescription({
-                title: task.title,
-                department: task.department || 'General',
-                priority: task.priority,
-                estimatedHours: task.estimatedHours || 8
-            });
+            const description = await googleAIService.generateContent(`Generate a detailed task description for: "${task.title}"
+            Department: ${task.department || 'General'}
+            Priority: ${task.priority}
+            Estimated Hours: ${task.estimatedHours || 8}
+
+            Provide a comprehensive description that includes objectives, key activities, expected outcomes, and helpful tips for completion.`);
             
             // Update the task with the generated description
             await UPDATE(Tasks).set({ description }).where({ ID });
@@ -168,12 +164,8 @@ module.exports = cds.service.impl(async function() {
                 req.error(404, 'Task not found');
             }
             
-            const suggestions = await openaiService.generateCompletion(
-                `Based on the task "${task.title}" with priority "${task.priority}", suggest 3-5 related learning activities or sub-tasks that would help an intern complete this task successfully. Focus on practical, actionable suggestions.`,
-                {
-                    systemMessage: 'You are a mentor providing helpful suggestions for intern tasks.',
-                    temperature: 0.7
-                }
+            const suggestions = await googleAIService.generateContent(
+                `Based on the task "${task.title}" with priority "${task.priority}", suggest 3-5 related learning activities or sub-tasks that would help an intern complete this task successfully. Focus on practical, actionable suggestions. You are a mentor providing helpful suggestions for intern tasks.`
             );
             
             // Store the generated content
@@ -204,7 +196,10 @@ module.exports = cds.service.impl(async function() {
                 req.error(400, 'Question is required');
             }
             
-            const response = await openaiService.generateFAQResponse(question, context);
+            const response = await googleAIService.generateContent(`Answer this FAQ question: "${question}"
+            ${context ? `Context: ${context}` : ''}
+
+            Provide a helpful, accurate response that would be appropriate for an employee onboarding system.`);
             
             // Store the generated content
             await INSERT.into(AIGeneratedContent).entries({
@@ -233,10 +228,9 @@ module.exports = cds.service.impl(async function() {
                 req.error(400, 'Prompt is required');
             }
             
-            const content = await openaiService.generateCompletion(prompt, {
-                systemMessage: 'You are a helpful assistant for an intern onboarding system.',
-                temperature: 0.7
-            });
+            const content = await googleAIService.generateContent(`${prompt}
+
+            You are a helpful assistant for an intern onboarding system. Provide a professional and helpful response.`);
             
             // Store the generated content
             await INSERT.into(AIGeneratedContent).entries({

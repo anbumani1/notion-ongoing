@@ -1,0 +1,392 @@
+/* Notion-like Notes Styling */
+
+/* Main Container */
+.notion-editor {
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+}
+
+.notion-sidebar {
+    background-color: #f7f6f3;
+    border-right: 1px solid #e9e9e7;
+    min-height: 700px;
+}
+
+/* Note Items in Sidebar */
+.notion-note-item {
+    border-radius: 6px;
+    margin: 2px 0;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.notion-note-item:hover {
+    background-color: #f1f1ef !important;
+}
+
+.notion-note-item.sapMLIBSelected {
+    background-color: #e9e9e7 !important;
+}
+
+.notion-note-title {
+    font-weight: 600;
+    color: #37352f;
+    font-size: 14px;
+}
+
+.notion-preview {
+    font-size: 12px;
+    color: #787774;
+    line-height: 1.4;
+}
+
+/* Note Header */
+.notion-note-header {
+    border-bottom: 1px solid #e9e9e7;
+    padding-bottom: 16px;
+}
+
+.notion-title-input input {
+    font-size: 32px;
+    font-weight: 700;
+    color: #37352f;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    line-height: 1.2;
+}
+
+.notion-title-input input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.notion-title-input input::placeholder {
+    color: #9b9a97;
+}
+
+/* Block Toolbar */
+.notion-block-toolbar {
+    background-color: #f7f6f3;
+    border: 1px solid #e9e9e7;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    padding: 8px;
+}
+
+/* Blocks Container */
+.notion-blocks-container {
+    background-color: #ffffff;
+    border-radius: 6px;
+}
+
+/* Individual Blocks */
+.notion-block {
+    margin: 4px 0;
+    padding: 4px 0;
+    border-radius: 3px;
+    transition: background-color 0.1s ease-in-out;
+    position: relative;
+}
+
+.notion-block:hover {
+    background-color: #f7f6f3;
+}
+
+.notion-block-content {
+    padding: 8px 12px;
+    min-height: 28px;
+    line-height: 1.5;
+    color: #37352f;
+}
+
+/* Block Types */
+.notion-heading-1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #37352f;
+    margin: 16px 0 8px 0;
+    line-height: 1.2;
+}
+
+.notion-heading-2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #37352f;
+    margin: 12px 0 6px 0;
+    line-height: 1.3;
+}
+
+.notion-heading-3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #37352f;
+    margin: 8px 0 4px 0;
+    line-height: 1.4;
+}
+
+.notion-paragraph {
+    font-size: 16px;
+    color: #37352f;
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+.notion-bullet-item {
+    font-size: 16px;
+    color: #37352f;
+    margin: 2px 0;
+    padding-left: 24px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.notion-bullet-item::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: #37352f;
+    font-weight: bold;
+}
+
+.notion-numbered-item {
+    font-size: 16px;
+    color: #37352f;
+    margin: 2px 0;
+    padding-left: 24px;
+    line-height: 1.5;
+}
+
+.notion-todo {
+    display: flex;
+    align-items: flex-start;
+    font-size: 16px;
+    color: #37352f;
+    margin: 2px 0;
+    line-height: 1.5;
+}
+
+.notion-todo input[type="checkbox"] {
+    margin-right: 8px;
+    margin-top: 2px;
+}
+
+.notion-quote {
+    font-size: 16px;
+    color: #37352f;
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-left: 4px solid #e9e9e7;
+    background-color: #f7f6f3;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.notion-code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 14px;
+    color: #eb5757;
+    background-color: #f7f6f3;
+    border: 1px solid #e9e9e7;
+    border-radius: 3px;
+    padding: 12px;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+.notion-divider {
+    border: none;
+    border-top: 1px solid #e9e9e7;
+    margin: 16px 0;
+}
+
+.notion-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 8px 0;
+}
+
+.notion-link {
+    color: #0070f3;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.1s ease-in-out;
+}
+
+.notion-link:hover {
+    border-bottom-color: #0070f3;
+}
+
+/* Add Block Placeholder */
+.notion-add-block-placeholder {
+    color: #9b9a97;
+    padding: 8px 12px;
+    border-radius: 3px;
+    transition: background-color 0.1s ease-in-out;
+    cursor: pointer;
+    text-align: left;
+    border: none;
+    background: transparent;
+    width: 100%;
+}
+
+.notion-add-block-placeholder:hover {
+    background-color: #f7f6f3;
+    color: #37352f;
+}
+
+/* Block Handle (for drag and drop) */
+.notion-block-handle {
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-color: #e9e9e7;
+    border-radius: 2px;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.notion-block:hover .notion-block-handle {
+    opacity: 1;
+}
+
+.notion-block-handle:active {
+    cursor: grabbing;
+}
+
+/* Note Footer */
+.notion-note-footer {
+    border-top: 1px solid #e9e9e7;
+    padding-top: 16px;
+    margin-top: 32px;
+}
+
+/* Auto-save Indicator */
+.notion-autosave-indicator {
+    color: #9b9a97;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.notion-autosave-indicator.saving {
+    color: #0070f3;
+}
+
+.notion-autosave-indicator.saved {
+    color: #00a86b;
+}
+
+/* Block Editor Input */
+.notion-block-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 4px 0;
+    font-size: 16px;
+    color: #37352f;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+}
+
+.notion-block-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.notion-block-input::placeholder {
+    color: #9b9a97;
+}
+
+/* Block Type Selector */
+.notion-block-type-selector {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #e9e9e7;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.notion-block-type-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f7f6f3;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.notion-block-type-option:hover {
+    background-color: #f7f6f3;
+}
+
+.notion-block-type-option:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notion-sidebar {
+        width: 100% !important;
+        margin-bottom: 16px;
+    }
+    
+    .notion-title-input input {
+        font-size: 24px;
+    }
+    
+    .notion-heading-1 {
+        font-size: 24px;
+    }
+    
+    .notion-heading-2 {
+        font-size: 20px;
+    }
+    
+    .notion-heading-3 {
+        font-size: 18px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .notion-editor {
+        background-color: #2f3437;
+        color: #ffffff;
+    }
+    
+    .notion-sidebar {
+        background-color: #25292c;
+        border-right-color: #3f4447;
+    }
+    
+    .notion-note-title {
+        color: #ffffff;
+    }
+    
+    .notion-preview {
+        color: #9b9a97;
+    }
+    
+    .notion-title-input input {
+        color: #ffffff;
+    }
+    
+    .notion-block-content {
+        color: #ffffff;
+    }
+    
+    .notion-heading-1,
+    .notion-heading-2,
+    .notion-heading-3,
+    .notion-paragraph {
+        color: #ffffff;
+    }
+}

@@ -7,8 +7,8 @@
                 <!-- Policy Categories -->
                 <Panel id="policyCategoriesPanel" headerText="Policy Categories" class="sapUiMediumMarginBottom">
                     <content>
-                        <List id="policyCategoriesList" items="{/policyCategories}" mode="SingleSelect" selectionChange="onPolicyCategorySelect">
-                            <CustomListItem id="policyCategoryItem" type="Active">
+                        <List id="policyCategoriesList" items="{/policyCategories}" mode="None">
+                            <CustomListItem id="policyCategoryItem" type="Active" press="onPolicyItemPress">
                                 <content>
                                     <HBox id="policyItemBox" alignItems="Center" class="sapUiMediumMargin">
                                         <core:Icon id="policyItemIcon" src="{icon}" size="2rem" color="#0070f2" class="sapUiMediumMarginEnd"/>
@@ -17,9 +17,25 @@
                                             <Text id="policyItemDesc" text="{description}" class="sapUiContentLabelColor sapUiTinyMarginTop"/>
                                         </VBox>
                                         <ToolbarSpacer id="policyItemSpacer"/>
-                                        <VBox id="policyItemStatus" alignItems="End">
+                                        <VBox id="policyItemStatus" alignItems="End" class="sapUiMediumMarginEnd">
                                             <ObjectStatus id="policyStatus" text="{status}" state="{path: 'status', formatter: '.formatPolicyStatus'}"/>
                                             <Text id="policyLastAccessed" text="Last: {lastAccessed}" class="sapUiContentLabelColor sapUiTinyMarginTop"/>
+                                        </VBox>
+                                        <VBox id="policyActionBox" alignItems="End">
+                                            <Button id="viewPolicyBtn" text="View Policy" type="Emphasized" press="onViewPolicy"
+                                                    class="sapUiTinyMarginBottom">
+                                                <customData>
+                                                    <core:CustomData key="policyTitle" value="{title}"/>
+                                                    <core:CustomData key="policyId" value="{id}"/>
+                                                </customData>
+                                            </Button>
+                                            <Button id="downloadPolicyBtn" text="Download" type="Default" press="onDownloadPolicy"
+                                                    icon="sap-icon://download">
+                                                <customData>
+                                                    <core:CustomData key="policyTitle" value="{title}"/>
+                                                    <core:CustomData key="policyId" value="{id}"/>
+                                                </customData>
+                                            </Button>
                                         </VBox>
                                     </HBox>
                                 </content>
@@ -44,6 +60,19 @@
                                     </VBox>
                                 </HBox>
                                 <Text id="policyDescription" text="{/selectedPolicy/content}" class="sapUiMediumMarginBottom" renderWhitespace="true"/>
+
+                                <!-- Quick Actions for Selected Policy -->
+                                <HBox id="policyQuickActions" justifyContent="SpaceBetween" alignItems="Center"
+                                      class="sapUiMediumMarginTop" visible="{= ${/selectedPolicy/title} !== 'Welcome to Company Policies'}">
+                                    <VBox id="policyActionsLeft">
+                                        <Button id="printPolicyBtn" text="Print Policy" type="Default" press="onPrintPolicy"
+                                                icon="sap-icon://print" class="sapUiTinyMarginEnd"/>
+                                    </VBox>
+                                    <VBox id="policyActionsRight" alignItems="End">
+                                        <Button id="sharePolicyBtn" text="Share Policy" type="Default" press="onSharePolicy"
+                                                icon="sap-icon://share-2" class="sapUiTinyMarginStart"/>
+                                    </VBox>
+                                </HBox>
                             </VBox>
                         </ScrollContainer>
                     </content>
